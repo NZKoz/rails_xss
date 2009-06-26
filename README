@@ -78,7 +78,17 @@ Don't do that.
   
 This is intended functionality and can't be fixed.
 
+Getting Started
+===============
+
+1) Freeze rails from the rails_xss branch on github:
+  http://github.com/NZKoz/rails/tree/rails_xss
+2) Install erubis
+  gem install erubis
+3) Install this plugin
+
+4) Report anything that breaks.
 
 
 
-Copyright (c) 2009 [name of plugin creator], released under the MIT license
+Copyright (c) 2009 Koziarski Software Ltd, released under the MIT license
