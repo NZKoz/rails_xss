@@ -1,0 +1,84 @@
+RailsXss
+========
+
+This plugin replaces the default ERB template handlers with erubis, and switches the behaviour to escape by default rather than requiring you to escape.  The intention is to ship this functionality, or something like it, for rails 3.0.  
+
+*************************************************************************************
+*This will *only* work with rails from http://github.com/NZKoz/rails/tree/rails_xss *
+*************************************************************************************
+
+Strings now have a notion of "html safe".  These strings will always be appended without escaping.  This means that helpers like link_to, form_tag etc will continue to work unmodified.  If you have your own helpers which return strings you *know* are safe,  you will need to mark the strings as safe.  For example
+
+  def some_helper
+    (1..5).map do |i|
+      "<li>#{i}</li>"
+    end.join("\n")
+  end
+
+With this plugin installed, these tags will be escaped.  So you will need to do one of the following:
+
+1) mark safe at the call site
+
+  <%= raw some_helper %>
+
+2) Mark safe in the helper:
+
+  def some_helper
+    (1..5).map do |i|
+      "<li>#{i}</li>"
+    end.join("\n").html_safe!
+  end
+  
+3) use the safe_helper meta programming method: (NOT YET IMPLEMENTED)
+
+  module ApplicationHelper
+    def some_helper
+      #...
+    end
+    safe_helper :some_helper
+  end  
+
+Example
+=======
+
+BEFORE:
+  <%= params[:own_me] %>        => XSS attack
+  <%=h params[:own_me] %>       => No XSS
+  <%= @blog_post.content %>     => Displays the HTML
+                                
+AFTER:                          
+  <%= params[:own_me] %>        => No XSS 
+  <%=h params[:own_me] %>       => No XSS (same result)
+  <%= @blog_post.content %>     => *escapes* the HTML
+  <%= raw @blog_post.content %> => Displays the HTML
+  
+  
+Gotchas
+=======
+
+# textilize and simple_format do *not* return safe strings
+
+Both these methods support arbitrary HTML and are *not* safe to embed directly in your document.  You'll need to do something like:
+
+<%= sanitize(textilize(@blog_post.content_textile)) %>
+
+# Safe strings aren't magic.
+
+Once a string has been marked as safe, the only operations which will maintain that HTML safety are String#<<, String#concat and String#+.  All other operations are safety ignorant so it's still probably possible to break your app if you're doing something like
+
+  value = something_safe
+  value.gsub!(/a/, params[:own_me])
+
+Don't do that.
+
+# String interpolation won't be safe, even when it 'should' be
+
+  value = "#{something_safe}#{something_else_safe}"
+  value.html_safe? # => false
+  
+This is intended functionality and can't be fixed.
+
+
+
+
+Copyright (c) 2009 [name of plugin creator], released under the MIT license
