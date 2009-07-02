@@ -1,6 +1,11 @@
 # Include hook code here
-require 'rails_xss'
 require 'erubis/helpers/rails_helper'
+require 'rails_xss'
 
 
-Erubis::Helpers::RailsHelper.engine_class = RailsXSS::Erubis
+Erubis::Helpers::RailsHelper.engine_class = RailsXss::Erubis
+
+
+Module.class_eval do
+  include RailsXss::SafeHelpers
+end

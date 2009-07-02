@@ -29,7 +29,7 @@ With this plugin installed, these tags will be escaped.  So you will need to do 
     end.join("\n").html_safe!
   end
   
-3) use the safe_helper meta programming method: (NOT YET IMPLEMENTED)
+3) use the safe_helper meta programming method:
 
   module ApplicationHelper
     def some_helper
