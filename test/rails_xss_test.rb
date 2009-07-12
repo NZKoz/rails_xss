@@ -15,4 +15,10 @@ class RailsXssTest < ActiveSupport::TestCase
     assert_equal "<p>", escaped
     assert escaped.html_safe?
   end
+  
+  test "ERB::Util.h should not implode when passed a non-string" do
+    assert_nothing_raised do
+      assert_equal "1", ERB::Util.h(1)
+    end
+  end
 end
