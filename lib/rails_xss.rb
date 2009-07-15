@@ -2,12 +2,25 @@
 module RailsXss
   class Erubis < ::Erubis::Eruby
     def add_preamble(src)
-      src << "@output_buffer = _buf = ActionView::SafeBuffer.new;"
+      src << "@output_buffer = ActionView::SafeBuffer.new;\n"
     end
 
     def add_text(src, text)
-      src << "_buf.concat('" << escape_text(text) << "'.html_safe!);"
+      src << "@output_buffer << ('" << escape_text(text) << "'.html_safe!);"
     end
+    
+    def add_expr_literal(src, code)
+      src << '@output_buffer << ((' << code << ').to_s);'
+    end
+
+    def add_expr_escaped(src, code)
+      src << '@output_buffer << ' << escaped_expr(code) << ';'
+    end
+    
+    def add_postamble(src)
+      src << '@output_buffer.to_s'
+    end
+    
   end
 
   module SafeHelpers
