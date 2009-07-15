@@ -6,7 +6,7 @@ module RailsXss
     end
 
     def add_text(src, text)
-      src << "@output_buffer.concat('" << escape_text(text) << "'.html_safe!);"
+      src << "_buf.concat('" << escape_text(text) << "'.html_safe!);"
     end
   end
 
