@@ -11,3 +11,4 @@ Module.class_eval do
 end
 
 require 'rails_xss_escaping'
+require 'av_patch'
