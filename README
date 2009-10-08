@@ -1,13 +1,11 @@
 RailsXss
 ========
 
-This plugin replaces the default ERB template handlers with erubis, and switches the behaviour to escape by default rather than requiring you to escape.  The intention is to ship this functionality, or something like it, for rails 3.0.  
+This plugin replaces the default ERB template handlers with erubis, and switches the behaviour to escape by default rather than requiring you to escape.  This is consistent with the behaviour in Rails 3.0.
 
-*************************************************************************************
-*This will *only* work with rails from http://github.com/NZKoz/rails/tree/rails_xss *
-*************************************************************************************
+Strings now have a notion of "html safe",  which is false by default.  Whenever rails copies a string into the response body it checks whether or not the string is safe, safe strings are copied verbatim into the response body, but unsafe strings are escaped first.  
 
-Strings now have a notion of "html safe".  These strings will always be appended without escaping.  This means that helpers like link_to, form_tag etc will continue to work unmodified.  If you have your own helpers which return strings you *know* are safe,  you will need to mark the strings as safe.  For example
+All the XSS-proof helpers like link_to and form_tag now return safe strings, and will continue to work unmodified.  If you have your own helpers which return strings you *know* are safe,  you will need to explicitly tell rails that they're safe.  For an example, take the following helper.
 
   def some_helper
     (1..5).map do |i|
@@ -15,13 +13,13 @@ Strings now have a notion of "html safe".  These strings will always be appended
     end.join("\n")
   end
 
-With this plugin installed, these tags will be escaped.  So you will need to do one of the following:
+With this plugin installed, the html will be escaped.  So you will need to do one of the following:
 
-1) mark safe at the call site
+1) Use the raw helper in your template.  raw will ensure that your string is copied verbatim into the response body.
 
   <%= raw some_helper %>
 
-2) Mark safe in the helper:
+2) Mark the string as safe in the helper itself:
 
   def some_helper
     (1..5).map do |i|
@@ -29,7 +27,7 @@ With this plugin installed, these tags will be escaped.  So you will need to do 
     end.join("\n").html_safe!
   end
   
-3) use the safe_helper meta programming method:
+3) Use the safe_helper meta programming method:
 
   module ApplicationHelper
     def some_helper
@@ -81,14 +79,11 @@ This is intended functionality and can't be fixed.
 Getting Started
 ===============
 
-1) Freeze rails from the rails_xss branch on github:
-  http://github.com/NZKoz/rails/tree/rails_xss
+1) Install rails 2.3.5 or higher, or freeze rails from 2-3-stable.
 2) Install erubis
   gem install erubis
 3) Install this plugin
-
+  ruby script/plugin install git://github.com/nzkoz/rails_xss.git
 4) Report anything that breaks.
-
-
 
 Copyright (c) 2009 Koziarski Software Ltd, released under the MIT license
