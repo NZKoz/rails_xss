@@ -6,3 +6,12 @@ module AvPatch
 end
 
 ActionView::Base.send :include, AvPatch
+
+
+module ActionView
+  class Base
+    def self.xss_safe?
+      true
+    end
+  end
+end
