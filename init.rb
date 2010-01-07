@@ -1,5 +1,5 @@
 # Include hook code here
-unless $gems_rake_task
+begin
   require 'erubis/helpers/rails_helper'
   require 'rails_xss'
 
@@ -11,4 +11,6 @@ unless $gems_rake_task
 
   require 'rails_xss_escaping'
   require 'av_patch'
-end
+rescue LoadError
+  puts "Could not load all modules required by rails_xss. Please make sure erubis is installed an try again."
+end unless $gems_rake_task
